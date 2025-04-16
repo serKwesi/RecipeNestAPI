@@ -67,16 +67,33 @@ using (var scope = app.Services.CreateScope())
     try
     {
         dbContext.Database.EnsureCreated();
-        if (!dbContext.Recipes.Any())
-        {
-            logger.LogInformation("Seeding database with initial recipes...");
-            dbContext.Recipes.AddRange(
-                new Recipe { Id = 11, Title = "Recipe 1", Description = "Delicious dish", Image = "", Likes = 0, Dislikes = 0, ChefId = 1 },
-                new Recipe { Id = 12, Title = "Recipe 2", Description = "Tasty treat", Image = "", Likes = 0, Dislikes = 0, ChefId = 1 }
-            );
-            await dbContext.SaveChangesAsync();
-            logger.LogInformation("Database seeded successfully.");
-        }
+        if (!dbContext.Chefs.Any()) // Check if there are no chefs
+{
+    logger.LogInformation("Seeding database with initial chef...");
+    var chef = new Chef
+    {
+        Name = "Default Chef",
+        Surname = "Smith",
+        Email = "chef@example.com",
+        PasswordHash = "hashedpassword", // In a real app, hash a password properly
+        Rating = 0.0F
+    };
+    dbContext.Chefs.Add(chef);
+    await dbContext.SaveChangesAsync();
+    logger.LogInformation("Chef seeded successfully.");
+}
+
+if (!dbContext.Recipes.Any()) // Check if there are no recipes
+{
+    logger.LogInformation("Seeding database with initial recipes...");
+    var chef = await dbContext.Chefs.FirstAsync(); // Get the first chef
+    dbContext.Recipes.AddRange(
+        new Recipe { Id = 11, Title = "Recipe 1", Description = "Delicious dish", Image = "", Likes = 0, Dislikes = 0, ChefId = chef.Id },
+        new Recipe { Id = 12, Title = "Recipe 2", Description = "Tasty treat", Image = "", Likes = 0, Dislikes = 0, ChefId = chef.Id }
+    );
+    await dbContext.SaveChangesAsync();
+    logger.LogInformation("Database seeded successfully.");
+}
     }
     catch (Exception ex)
     {
