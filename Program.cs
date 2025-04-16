@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
 
 // Configure SQLite with BusyTimeout
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite("Data Source=recipenest.db;Pooling=True;BusyTimeout=5000", sqliteOptions =>
+    options.UseSqlite("Data Source=recipenest.db", sqliteOptions =>
     {
         sqliteOptions.CommandTimeout(60);
     }));
